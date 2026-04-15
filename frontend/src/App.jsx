@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Bath,
   BedDouble,
@@ -31,6 +31,7 @@ const initialForm = {
 }
 
 const toggles = ['guestroom', 'mainroad', 'prefarea', 'basement', 'airconditioning']
+const MAX_QUERY_LENGTH = 1200
 
 const toINR = (value) =>
   new Intl.NumberFormat('en-IN', {
@@ -51,7 +52,21 @@ function App() {
   const resultRef = useRef(null)
   const chatRef = useRef(null)
 
-  const apiBase = useMemo(() => import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000', [])
+  const apiBase =
+    import.meta.env.VITE_API_BASE_URL ||
+    `${window.location.protocol}//${window.location.hostname || 'localhost'}:8000`
+
+  useEffect(() => {
+    if (prediction) {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [prediction])
+
+  useEffect(() => {
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight
+    }
+  }, [chatHistory])
 
   const updateField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }))
@@ -118,10 +133,6 @@ function App() {
     const explanation = `Based on your configuration, the estimate is driven by property size, room composition, amenity score, and furnishing profile. Higher connectivity and feature-rich homes generally command a stronger market valuation, while moderate amenities and unfinished interiors reduce pricing power. This estimate is directional and should be validated with current local transactions.`
 
     setPrediction({ estimatedPrice, factors, explanation })
-
-    window.setTimeout(() => {
-      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 80)
   }
 
   const askLegalAdvisor = async (event) => {
@@ -131,6 +142,18 @@ function App() {
 
     const userMessage = chatInput.trim()
     setChatInput('')
+
+    if (userMessage.length > MAX_QUERY_LENGTH) {
+      setChatHistory((prev) => [
+        ...prev,
+        { role: 'user', text: userMessage },
+        {
+          role: 'ai',
+          text: 'Please shorten your question so I can process it reliably.',
+        },
+      ])
+      return
+    }
 
     setChatHistory((prev) => [...prev, { role: 'user', text: userMessage }])
     setChatLoading(true)
@@ -154,11 +177,6 @@ function App() {
       ])
     } finally {
       setChatLoading(false)
-      window.setTimeout(() => {
-        if (chatRef.current) {
-          chatRef.current.scrollTop = chatRef.current.scrollHeight
-        }
-      }, 60)
     }
   }
 
