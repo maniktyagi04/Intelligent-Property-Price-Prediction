@@ -53,6 +53,22 @@ From `property_price_prediction/`:
 streamlit run app.py
 ```
 
+## React Frontend (One-Page UI)
+
+A new responsive React + Tailwind frontend is available in `frontend/`.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Optional API base for legal chatbot:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
 ## Retrain the Model
 
 1. Ensure dataset is available at `property_price_prediction/data/Housing.csv`
