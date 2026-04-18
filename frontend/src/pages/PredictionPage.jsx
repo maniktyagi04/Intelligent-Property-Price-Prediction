@@ -65,7 +65,7 @@ export default function PredictionPage() {
         furnishingstatus: formData.furnishingstatus
       };
 
-      const response = await axios.post('http://localhost:8000/predict', payload);
+      const response = await axios.post('https://intelligent-property-backend.onrender.com/predict', payload);
       setResult(response.data);
     } catch (err) {
       setError(err.response?.data?.detail || 'An error occurred while predicting.');
