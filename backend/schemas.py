@@ -6,12 +6,12 @@ class PredictionRequest(BaseModel):
     bathrooms: int
     stories: int
     parking: int
-    guestroom: str # "Yes" or "No"
+    guestroom: str 
     mainroad: str
     prefarea: str
     basement: str
     airconditioning: str
-    furnishingstatus: str # "furnished", "semi-furnished", "unfurnished"
+    furnishingstatus: str
 
 class PredictionResponse(BaseModel):
     prediction: float
