@@ -6,7 +6,8 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
-\usepackage{url}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
 \usepackage{booktabs}
 \usepackage{listings}
 
@@ -19,120 +20,126 @@
 
 \begin{document}
 
-\title{Intelligent Property Price Prediction System\\(Milestone 1 Report)}
+\title{Intelligent Property Price Prediction System\\(Complete Architecture Report)}
 
 \author{
-\IEEEauthorblockN{Neural  Hackers}
+\IEEEauthorblockN{Neural Hackers}
 \IEEEauthorblockA{Real Estate Analytics Project}
 }
 
 \maketitle
 
 \begin{abstract}
-This report presents a machine learning system for residential property price prediction implemented in the repository \texttt{lomesh2312/Intelligent-Property-Price-Prediction}. The project trains and compares Linear Regression, Decision Tree Regressor, and Random Forest Regressor models on the Kaggle Housing dataset. The best model is selected using RMSE and deployed through a Streamlit interface for interactive prediction. The final system satisfies Milestone 1 requirements for supervised learning, evaluation, and user-facing prediction.
+This report presents an advanced machine learning and AI-driven system for residential property price prediction and advisory. Evolving from a monolithic prototype, the updated system adopts a decoupled architecture with a React frontend and a FastAPI backend. Key enhancements include automated feature selection using Random Forest importance scoring, integration of Large Language Models (LLMs) via LangChain and Groq (LLaMA 3.3 70B) for personalized real estate advisory, and a Retrieval-Augmented Generation (RAG) engine serving as a specialized legal property assistant. The system provides highly accurate valuations alongside context-aware, risk-adjusted insights.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Property price prediction, real estate analytics, regression, Streamlit, machine learning.
+Property price prediction, FastAPI, React, Large Language Models, RAG, Feature Selection, Machine Learning.
 \end{IEEEkeywords}
 
 \section{Introduction}
-Accurate property valuation is essential for buyers, sellers, and investors. Manual estimation is often subjective and may ignore important feature interactions. This project develops a data-driven property valuation pipeline using supervised regression models trained on historical housing data. The system is exposed through a web interface where users enter property features and receive instant predicted prices.
+Accurate property valuation is essential for real estate stakeholders, yet numerical estimates often lack the contextual and legal nuances required for informed decision-making. Building upon the baseline supervised learning models, this project introduces a robust, multi-tier architecture. It augments raw price prediction with a capable AI advisory layer and a domain-specific Retrieval-Augmented Generation (RAG) legal assistant, successfully bridging the gap between statistical estimates and practical, human-centered real estate consultation.
 
-\section{Problem Statement}
-Given structured housing attributes (e.g., area, bedrooms, bathrooms, amenities, and furnishing status), predict the market price of a property. The system should select a strong-performing regression model and provide a practical interface for end users.
-
-\section{Dataset and Inputs}
-\subsection{Dataset}
-The implementation uses the Kaggle Housing Prices dataset (\texttt{Housing.csv}) \cite{kaggle_housing}. The target column is \texttt{price}.
-
-\subsection{Input Features}
-The training script uses the following engineered features:
-\begin{lstlisting}[language={}]
-area, bedrooms, guestroom, bathrooms,
-mainroad, prefarea, stories, parking,
-basement, airconditioning,
-furnishingstatus_semi-furnished,
-furnishingstatus_unfurnished
-\end{lstlisting}
-
-\subsection{Output}
-The model outputs a predicted numeric property price. The UI additionally displays the selected best model name.
-
-\section{Methodology}
-\subsection{Preprocessing}
-The pipeline in \texttt{train\_model.py} performs:
+\section{System Architecture}
+The system has migrated from a simple Streamlit interface to a highly scalable, decoupled stack:
 \begin{itemize}
-  \item Binary mapping for yes/no columns: \texttt{mainroad}, \texttt{guestroom}, \texttt{basement}, \texttt{airconditioning}, \texttt{prefarea}.
-  \item One-hot encoding of \texttt{furnishingstatus} with drop-first.
+    \item \textbf{Frontend:} A modern web interface developed using React \cite{react} and Vite, communicating via RESTful APIs.
+    \item \textbf{Backend:} A FastAPI \cite{fastapi} application that handles model inference, advisory generation, and RAG-based chat.
+    \item \textbf{Machine Learning Layer:} A pre-trained scikit-learn \cite{sklearn} model optimized via automated feature selection.
+    \item \textbf{Generative AI Engine:} Integration with Groq's \texttt{llama-3.3-70b-versatile} \cite{groq_llama} model using LangChain \cite{langchain} to provide natural language insights and knowledge retrieval.
 \end{itemize}
 
-\subsection{Models}
-Three supervised regressors are trained \cite{sklearn,breiman2001}:
+\section{Machine Learning Enhancements}
+\subsection{Automated Feature Selection}
+Rather than utilizing all available engineered inputs from the Kaggle Housing dataset \cite{kaggle_housing}, the training pipeline (\texttt{train\_model.py}) now leverages a Random Forest Regressor \cite{breiman2001} to compute feature importances. The system dynamically selects the \textbf{top 8 most critical features}. The core regressors (Linear Regression, Decision Tree, and Random Forest) are subsequently trained exclusively on this refined feature space, optimizing both performance and inference efficiency.
+
+\subsection{Model Selection and Persistence}
+During training, three models were evaluated: Linear Regression, Decision Tree Regressor, and Random Forest Regressor. All three models were checked using Root Mean Squared Error (RMSE), but Linear Regression was found to fit well and achieved the most optimal performance, thus it was selected as the final deployed model. The chosen model is persisted using Joblib. Furthermore, the selected \texttt{top\_features} array is serialized alongside the model, ensuring the inference module (\texttt{model.py}) successfully maps incoming requests to the exact feature shapes expected by the trained pipeline.
+
+\section{Generative AI and RAG Integrations}
+\subsection{LLM-Powered Real Estate Advisory}
+To complement the quantitative prediction, the system generates professional advisory reports. The prediction inputs, along with the predicted price, are fed into the LLaMA 3.3 70B model with strict constraints to ensure responsible guidance. 
+The LLM dynamically generates:
+\begin{enumerate}
+    \item \textbf{Property Summary}: An overview of the property's key attributes.
+    \item \textbf{Price Insight}: Contextualization of the valuation.
+    \item \textbf{Market Trends}: Relevant external market indicators.
+    \item \textbf{Recommendation}: Actionable, risk-aware purchase advice.
+    \item \textbf{Risks}: Strict enumeration of potential drawbacks without guaranteeing profit.
+\end{enumerate}
+
+\subsection{Legal Property Assistant (RAG Engine)}
+A Retrieval-Augmented Generation (RAG) module (\texttt{rag.py}) is integrated to answer domain-specific queries. Initialized with a local knowledge base (\texttt{real\_estate\_knowledge.txt}), the RAG engine functions exclusively as a legal assistant. 
+Prompts are tightly constrained to:
 \begin{itemize}
-  \item Linear Regression
-  \item Decision Tree Regressor
-  \item Random Forest Regressor (200 trees)
+    \item Provide short, precise, and purely factual legal answers.
+    \item Exclude general market trends, recommendations, or risk profiles.
+    \item Format output cleanly using bullet points without excessive Markdown formatting.
+\end{itemize}
+This ensures the query responses remain distinctly authoritative regarding property law constraints.
+
+\section{API Design}
+The FastAPI backend exposes two primary endpoints:
+\begin{itemize}
+    \item \textbf{\texttt{POST /predict}:} Accepts property attributes (\texttt{PredictionRequest}), processes inputs, computes the predicted price, and orchestrates the LLM to return a \texttt{PredictionResponse} containing both the numeric value and narrative advisory.
+    \item \textbf{\texttt{POST /chat}:} Accepts user queries (\texttt{ChatRequest}) and utilizes the RAG engine to return a factual legal response (\texttt{ChatResponse}).
 \end{itemize}
 
-\subsection{Training and Selection}
-Data is split with 80:20 train-test partition (\texttt{random\_state=42}). Each model is evaluated on test data with RMSE, and the best model is selected by minimum RMSE. The selected model and its name are saved using Joblib:
-\begin{lstlisting}[language=Python]
-joblib.dump((best_model, best_model_name),
-            "model/best_house_price_model.pkl")
-\end{lstlisting}
-
-\section{Results}
-The repository README reports the following example performance:
-\begin{table}[ht]
-\centering
-\caption{Model Performance (Repository Reported)}
-\begin{tabular}{lcc}
-\toprule
-Model & RMSE & $R^2$ \\
-\midrule
-Linear Regression & 1,347,778.29 & 0.6406 \\
-Decision Tree & 1,754,528.50 & 0.3910 \\
-Random Forest & 1,409,390.67 & 0.6070 \\
-\bottomrule
-\end{tabular}
-\label{tab:results}
-\end{table}
-
-Based on RMSE, Linear Regression is selected as the final deployed model in this implementation.
-
-\section{System Interface and Deployment}
-\subsection{Streamlit Interface}
-The application (\texttt{property\_price\_prediction/app.py}) provides an input form for property attributes and validates required user selections before inference. Predicted price and selected model name are displayed after submission.
-
-\subsection{Deployment}
-The project is publicly deployed at:
+\section{Deployment and Repository Information}
+The full project source code is available on GitHub at:
 \begin{center}
-\textbf{\url{https://intelligent-property-price-prediction.streamlit.app/}}
+\url{https://github.com/lomesh2312/Intelligent-Property-Price-Prediction}
 \end{center}
 
-\section{Repository Information}
-Source repository:
+The updated frontend web application is fully deployed and accessible to users at:
 \begin{center}
-\textbf{\url{https://github.com/lomesh2312/Intelligent-Property-Price-Prediction}}
+\url{https://frontend-eta-six-kjtjs91us4.vercel.app/}
 \end{center}
 
-Main structure:
+The repository structure has been completely reorganized to reflect the multi-node stack:
 \begin{lstlisting}[language={}]
 Intelligent-Property-Price-Prediction/
-|- README.md
-|- property_price_prediction/
-|  |- app.py
+|- backend/
+|  |- main.py
+|  |- model.py
+|  |- rag.py
 |  |- train_model.py
-|  |- requirements.txt
-|  |- model/
-|     |- best_house_price_model.pkl
+|  |- schemas.py
+|- frontend/
+|  |- package.json
+|  |- src/
+|- models/
+|  |- best_house_price_model.pkl
+|- report/
+|  |- main.tex
 \end{lstlisting}
 
 \section{Conclusion}
-This project delivers a working Milestone 1 property price prediction system with supervised regression, basic preprocessing, model comparison, persisted artifact, and public Streamlit deployment. It provides a practical baseline for extending into an agentic advisory system in subsequent milestones.
+The updated Intelligent Property Price Prediction System represents a significant architectural leap. By combining automated ML feature selection with state-of-the-art Generative AI capabilities (both advisory and legal RAG), the platform transforms a baseline regression tool into a comprehensive, interactive real estate consultant.
 
-\bibliographystyle{IEEEtranN}
-\bibliography{references}
+\begin{thebibliography}{9}
+
+\bibitem{kaggle_housing}
+Housing Prices Dataset. \url{https://www.kaggle.com/datasets/yasserh/housing-prices-dataset}.
+
+\bibitem{sklearn}
+scikit-learn: Machine Learning in Python. \url{https://scikit-learn.org/stable/}.
+
+\bibitem{breiman2001}
+L.~Breiman, ``Random forests,'' \emph{Machine Learning}, vol.~45, no.~1, pp.~5--32, 2001.
+
+\bibitem{react}
+Meta Platforms, Inc., React: The library for web and native user interfaces. \url{https://react.dev/}.
+
+\bibitem{fastapi}
+S.~Ram{\'i}rez, FastAPI framework, high performance, easy to learn, fast to code, ready for production. \url{https://fastapi.tiangolo.com/}.
+
+\bibitem{groq_llama}
+Groq, Inc., Groq - Fast AI Inference Engine. \url{https://groq.com/}.
+
+\bibitem{langchain}
+LangChain: A framework for developing applications powered by language models. \url{https://www.langchain.com/}.
+
+\end{thebibliography}
 
 \end{document}
