@@ -1,98 +1,155 @@
-# Intelligent Property Price Prediction
+# 🏡 Intelligent Property Price Prediction and Advisory System
 
-A Streamlit application that predicts house prices from structured property features using a trained scikit-learn regression model.
+## 📌 Overview
 
-## What It Does
+This project is a full-stack AI-driven application designed to predict real estate property prices and provide intelligent advisory insights. It combines machine learning models with modern backend architecture and LLM-based reasoning to deliver accurate predictions along with contextual explanations.
 
-- Collects property inputs (area, bedrooms, bathrooms, stories, parking, amenities, furnishing)
-- Runs inference using a pre-trained best model (`best_house_price_model.pkl`)
-- Shows predicted price and model name in the UI
+The system enables users to input property details and receive:
 
-## Tech Stack
+* Predicted property price
+* AI-generated insights and recommendations
+* Domain-specific advisory using a lightweight RAG pipeline
 
-- Python
-- Streamlit
-- pandas
-- scikit-learn
-- joblib
+---
 
-## Repository Structure
+## 🚀 Features
 
-```text
-.
-├── README.md
-└── property_price_prediction/
-    ├── app.py
-    ├── train_model.py
-    ├── requirements.txt
-    └── model/
-        └── best_house_price_model.pkl
+* 📊 Machine Learning-based property price prediction
+* ⚙️ FastAPI backend with RESTful APIs
+* 🌐 React (Vite) frontend for user interaction
+* 🤖 LLM integration (Llama 3 via Groq) for intelligent insights
+* 📚 Lightweight RAG-based advisory system using domain knowledge
+* ☁️ Deployment: Frontend on Vercel, Backend on Render
+
+---
+
+## 🧠 Tech Stack
+
+### Backend
+
+* FastAPI
+* Python
+* Pydantic
+
+### Machine Learning
+
+* Scikit-learn
+* Pandas
+* NumPy
+
+### Frontend
+
+* React (Vite)
+
+### AI / LLM
+
+* Groq API
+* Llama 3
+
+### Deployment
+
+* Vercel (Frontend)
+* Render (Backend)
+
+---
+
+## ⚙️ Machine Learning Pipeline
+
+* Data preprocessing and cleaning
+* Feature engineering and encoding
+* Feature selection using model-based importance
+* Model training and comparison:
+
+  * Linear Regression
+  * Decision Tree Regressor
+  * Random Forest Regressor
+* Model evaluation and selection
+* Model serialization for inference
+
+---
+
+## 🤖 LLM & RAG Integration
+
+* Integrated Llama 3 using Groq API for generating contextual insights
+* Implemented prompt engineering for property-specific recommendations
+* Built a lightweight RAG pipeline using domain-specific knowledge files
+* Injected contextual data into prompts to enhance response relevance
+
+---
+
+## 🌐 API Endpoints
+
+* `/predict` → Predict property price
+* `/insights` → Generate AI-based insights
+* `/rag` → Answer real estate queries using contextual knowledge
+
+---
+
+## 📂 Project Structure
+
+```
+├── backend/
+│   ├── main.py
+│   ├── model.py
+│   ├── schemas.py
+│   ├── utils/
+│   └── data/
+├── frontend/
+│   ├── src/
+│   ├── components/
+│   └── pages/
+├── dataset/
+├── models/
+└── README.md
 ```
 
-## Dataset
+---
 
-- Source: [Kaggle Housing Prices Dataset](https://www.kaggle.com/datasets/yasserh/housing-prices-dataset)
-- Training script expects: `property_price_prediction/data/Housing.csv`
-- Note: `data/` and CSV files are gitignored, so you must place the dataset locally before training.
+## 📊 Dataset
 
-## Local Setup
+* Dataset used for training the model:
+  https://www.kaggle.com/datasets/yasserh/housing-prices-dataset
 
-1. Create and activate a virtual environment.
-2. Install dependencies:
+---
+
+## 🌍 Deployment Links
+
+* Frontend (Vercel): https://frontend-eta-six-kjtjs91us4.vercel.app/
+* Backend (Render): https://intelligent-property-backend.onrender.com
+
+---
+
+## 🛠️ Setup Instructions
+
+### Backend
 
 ```bash
-cd property_price_prediction
+cd backend
 pip install -r requirements.txt
+uvicorn main:app --reload
 ```
 
-## Run the App
-
-From `property_price_prediction/`:
+### Frontend
 
 ```bash
-streamlit run app.py
+cd frontend
+npm install
+npm run dev
 ```
 
-## Retrain the Model
+---
 
-1. Ensure dataset is available at `property_price_prediction/data/Housing.csv`
-2. Run:
+## 📈 Future Improvements
 
-```bash
-cd property_price_prediction
-python train_model.py
-```
+* Integrate vector database (FAISS/Chroma) for advanced RAG
+* Improve feature engineering and model accuracy
+* Add authentication and user management
+* Enhance UI/UX for better user experience
 
-This script trains three regressors:
+---
 
-- Linear Regression
-- Decision Tree Regressor
-- Random Forest Regressor
+## 📌 Conclusion
 
-It selects the model with the lowest RMSE and saves:
+This project demonstrates the integration of machine learning, backend engineering, and LLM-based reasoning into a single scalable system. It showcases practical implementation of real-world AI applications in the real estate domain.
 
-- `property_price_prediction/model/best_house_price_model.pkl`
-
-## Model Features Used
-
-- `area`
-- `bedrooms`
-- `guestroom`
-- `bathrooms`
-- `mainroad`
-- `prefarea`
-- `stories`
-- `parking`
-- `basement`
-- `airconditioning`
-- `furnishingstatus_semi-furnished`
-- `furnishingstatus_unfurnished`
-
-## Deployment
-
-- Streamlit Cloud app: [intelligent-property-price-prediction.streamlit.app](https://intelligent-property-price-prediction.streamlit.app/)
-
-## Notes
-
-- The app displays prices with INR symbol (`₹`).
-- Input ranges in the UI are currently aligned to the training data assumptions hardcoded in `app.py`.
+---
