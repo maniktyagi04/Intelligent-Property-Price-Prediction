@@ -117,25 +117,6 @@ The system enables users to input property details and receive:
 * Frontend (Vercel): https://frontend-eta-six-kjtjs91us4.vercel.app/
 * Backend (Render): https://intelligent-property-backend.onrender.com
 
----
-
-## 🛠️ Setup Instructions
-
-### Backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
 
 ---
 
