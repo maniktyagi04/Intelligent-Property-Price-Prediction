@@ -23,7 +23,7 @@ export default function ChatPage() {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://intelligent-property-backend.onrender.com/chat', { query: userMsg.text });
+      const response = await axios.post('http://localhost:8000/chat', { query: userMsg.text });
       setMessages(prev => [...prev, { role: 'bot', text: response.data.response }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'bot', text: 'Sorry, I am having trouble connecting to the server.' }]);
